@@ -12,6 +12,12 @@
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 #define GREEN_COLOR [UIColor colorWithRed:208/255.0 green:241/255.0 blue:186/255.0 alpha:1]
+
+@interface MessageCell()
+
+@property(nonatomic,strong)UIPasteboard * pasteboard;//粘贴板
+@end
+
 @implementation MessageCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -20,6 +26,8 @@
     
     //默认样式
     [self loadOtherCell];
+    
+    self.pasteboard = [UIPasteboard generalPasteboard];
     
     return self;
 }
@@ -66,7 +74,11 @@
     _messageL.numberOfLines = 0;
     _messageL.layer.cornerRadius = 10;
     _messageL.layer.masksToBounds = YES;
+    _messageL.userInteractionEnabled = YES;
     [_messageView addSubview:_messageL];
+    
+    UILongPressGestureRecognizer *longGR = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longHandle:)];
+    [_messageL addGestureRecognizer:longGR];
     
     __weak typeof(self) weakSelf = self;
     [_headerIV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -156,7 +168,11 @@
     _messageL.numberOfLines = 0;
     _messageL.layer.cornerRadius = 7;
     _messageL.layer.masksToBounds = YES;
+    _messageL.userInteractionEnabled = YES;
     [_messageView addSubview:_messageL];
+    
+    UILongPressGestureRecognizer *longGR = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longHandle:)];
+    [_messageL addGestureRecognizer:longGR];
     
     __weak typeof(self) weakSelf = self;
     [_headerIV mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -275,6 +291,8 @@
         
         //马上刷新
         [self layoutIfNeeded];
+        
+        
     }
     else//自己
     {
@@ -333,6 +351,7 @@
     CGFloat h = CGRectGetMaxY(_messageView.frame) + 10;
     return h;
 }
+
 #pragma mark  ===== tools =====
 -(CGSize) sizeForLableWithText:(NSString *)strText fontSize:(NSInteger)fontSize withSize:(CGSize)size
 {
@@ -352,6 +371,85 @@
                             attributes:dic        // 文字的属性
                                context:nil].size;
     return textSize;
+}
+
+//----- 粘贴板事件
+- (void)longHandle:(UILongPressGestureRecognizer *)sender
+{
+    
+    if (sender.state == UIGestureRecognizerStateBegan)
+    {
+//        [_messageL becomeFirstResponder]; 在cell中给messageL变为第一响应，menuC不显示
+        [self becomeFirstResponder];
+        
+        UIMenuController * menuC = [UIMenuController sharedMenuController];
+        
+        //当长按label的时候，这个方法会不断调用，menu就会出现一闪一闪不断显示，需要在此处进行判断
+        if (menuC.isMenuVisible)return;
+        
+        //copy
+        UIMenuItem * copyLink = [[UIMenuItem alloc] initWithTitle:@"复制" action:@selector(copyToPasteboard:)];
+        //cut
+        UIMenuItem * cutLink = [[UIMenuItem alloc] initWithTitle:@"剪切" action:@selector(cutToPasteboard:)];
+        
+        UIMenuItem * pasteLink = [[UIMenuItem alloc] initWithTitle:@"粘贴" action:@selector(pasteToPasteboard:)];
+        
+        [menuC setMenuItems:@[copyLink,cutLink,pasteLink]];
+        [menuC setTargetRect:_messageL.frame inView:_messageL.superview];
+        [menuC setMenuVisible:YES animated:YES];
+        
+        NSLog(@"%@",NSStringFromCGRect(menuC.menuFrame));
+    }
+}
+
+//复制
+- (void)copyToPasteboard:(id)sender
+{
+    if (_messageL.text != nil)
+    {
+        _pasteboard.string = _messageL.text;
+    }
+    else return;
+}
+
+//剪切
+- (void)cutToPasteboard:(id)sender
+{
+    if (_messageL.text != nil)
+    {
+        
+        //        UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+        _pasteboard.string = _messageL.text;
+        _messageL.text = nil;
+    }
+    else return;
+}
+
+//粘贴
+- (void)pasteToPasteboard:(id)sender
+{
+    _messageL.text = self.pasteboard.string;
+}
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    if (action == @selector(copyToPasteboard:))
+    {
+        return YES;
+    }
+    if (action == @selector(cutToPasteboard:))
+    {
+        return YES;
+    }
+    if (action == @selector(pasteToPasteboard:))
+    {
+        return YES;
+    }
+    return NO;
 }
 
 @end

@@ -9,17 +9,16 @@
 #import "MessageVC.h"
 #import "MessageCell.h"
 #import "Masonry.h"
+
 /*
  定义安全区域到顶部／底部高度
- */
-/*
- 屏幕宽高
  */
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 
 #define SafeAreaTopHeight (SCREEN_WIDTH == 812.0 ? 88 : 64)
 #define SafeAreaBottomHeight (SCREEN_HEIGHT == 812.0 ? 34 : 0)
+
 @interface MessageVC ()<UITableViewDelegate,UITableViewDataSource,UITextViewDelegate>
 {
     //键盘高度
@@ -45,6 +44,7 @@
     self.title = @"聊天消息";
     self.view.backgroundColor = [UIColor whiteColor];
     
+    
     _keyboardHigh = 0;
     _dataSource = [NSMutableArray new];
     _cellHeight = [NSMutableDictionary new];
@@ -55,18 +55,18 @@
     //加载tableView
     [self loadTableView];
     
-    //请求数据
-    [self downLoad];
-    
     //键盘弹跳通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
 }
-- (void)viewWillAppear:(BOOL)animated
+-(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self resignAllFirstResponder];
+    
+    //请求数据
+    [self downLoad];
 }
 -(void)viewWillDisappear:(BOOL)animated
 {
@@ -79,7 +79,7 @@
     if (!_footerView)
     {
         CGFloat footerViewHeight = 60;
-        _footerView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_WIDTH - footerViewHeight - SafeAreaBottomHeight, SCREEN_WIDTH, footerViewHeight)];
+        _footerView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT - footerViewHeight - SafeAreaBottomHeight, SCREEN_WIDTH, footerViewHeight)];
         _footerView.backgroundColor = [UIColor grayColor];
         [self.view addSubview:_footerView];
         
@@ -112,6 +112,7 @@
         }];
         
         _chatTV = tv;
+        
         //sentBtn
         CGFloat sentBtnWith = 60, sentBtnHeight = 40;
         UIColor *sentBtnColor = [UIColor colorWithRed:125/255.0 green:207/255.0 blue:247/255.0 alpha:1];
@@ -137,6 +138,7 @@
 {
     if (!_tableView)
     {
+        //        self.automaticallyAdjustsScrollViewInsets = NO;
 #ifdef __IPHONE_11_0
         _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 #else
@@ -160,6 +162,9 @@
             make.width.mas_equalTo(weakSelf.view.mas_width);
             make.bottom.equalTo(_footerView.mas_top);
         }];
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hiddenKeyBoard:)];
+        [_tableView addGestureRecognizer:tap];
     }
 }
 #pragma mark  ===== request =====
@@ -169,28 +174,48 @@
     
     //type 0 对方 1 自己 /headerImg 头像 /name
     _dataSource = @[@{@"type":@"0",@"headerImg":@"",@"name":@"王鹏",@"time":@"2017-12-06 14:49",@"mess":@"hello,are you ok?"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"I'm fine ，how about you?"},@{@"type":@"0",@"headerImg":@"",@"name":@"王鹏",@"time":@"2017-12-06 14:49",@"mess":@"lajfldjflasd;gjasdl;kfjdakl;sfjalks;fjals;dgjakl;sdjfakl;sgjakl;sdjfal;fjaklsjgakl;sdjfa;lkgja;lksfdj;lkfja;lgajf;fasdfkjakjfaklgjalsk;fja;ldfjkals;gja;lkdfjkal;gja;lfjd;"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"唯有工作，能使俺快乐。"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"大嘎嘎历史上的咖啡机阿里的风景啊了；即咖喱的咖啡机阿里；框架噶；了的咖啡机阿奎罗；是风景啊了；发动机啊；理发店"}].mutableCopy;
-    [_tableView reloadData];
+    
+    [UIView animateWithDuration:0.25f animations:^{
+        
+        [_tableView reloadData];
+        
+    } completion:^(BOOL finished) {
+        
+        //滑动到底部
+        [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }];
 }
 #pragma mark  ===== action  =====
 -(void)resignAllFirstResponder//注销第一响应者
 {
     if(self.chatTV.isFirstResponder) [self.chatTV resignFirstResponder];
 }
--(void)sendMessageAction:(id)sender
+-(void)hiddenKeyBoard:(id)sender
 {
     [self resignAllFirstResponder];
-    
+}
+-(void)sendMessageAction:(id)sender
+{
     //发送消息，调用发送消息接口；请求成功后，调用download方法重新加载数据并刷新tableview
     
     //此处对假数据进行处理 修改数据源并刷新tableview；
     if (_chatTV.text.length > 0)
     {
         [self.dataSource addObject:@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":_chatTV.text}];
+        
         [_tableView reloadData];
+        
+        [UIView animateWithDuration:0.25f animations:^{
+            
+            
+        } completion:^(BOOL finished) {
+            
+            [self reframeFooterView:60 AndChatView:40];
+            //滑动到底部
+            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+            _chatTV.text = nil;
+        }];
     }
-    //滑动到底部
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-    _chatTV.text = nil;
 }
 
 #pragma mark
@@ -280,6 +305,15 @@
             make.width.mas_equalTo(weakSelf.view.mas_width);
             make.bottom.equalTo(_footerView.mas_top);
         }];
+        
+    }];
+}
+-(void)keyboardDidHide:(NSNotificationCenter *)sender
+{
+    [UIView animateWithDuration:0.25f animations:^{
+        
+        //滑动到底部
+        [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }];
 }
 #pragma  mark --tv delegate method
@@ -291,8 +325,6 @@
 {
     if ([text isEqualToString:@"\n"] && textView.returnKeyType != UIReturnKeyDefault)
     {
-        [textView resignFirstResponder];
-        
         NSLog(@"回车");
         //发送消息
         [self sendMessageAction:nil];
@@ -337,9 +369,6 @@
         make.height.mas_equalTo(chatH);
     }];
     
-    //    //更新
-    //    [self.view layoutIfNeeded];
-    
     __weak typeof(self) weakSelf = self;
     [_tableView mas_updateConstraints:^(MASConstraintMaker *make) {
         
@@ -353,6 +382,7 @@
         
         //滑动到底部
         [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+        
     }];
 }
 
@@ -363,5 +393,3 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end
-
-
