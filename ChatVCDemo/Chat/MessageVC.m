@@ -173,7 +173,7 @@
     //请求数据 此处暂时写入加数据处理
     
     //type 0 对方 1 自己 /headerImg 头像 /name
-    _dataSource = @[@{@"type":@"0",@"headerImg":@"",@"name":@"王鹏",@"time":@"2017-12-06 14:49",@"mess":@"hello,are you ok?"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"I'm fine ，how about you?"},@{@"type":@"0",@"headerImg":@"",@"name":@"王鹏",@"time":@"2017-12-06 14:49",@"mess":@"lajfldjflasd;gjasdl;kfjdakl;sfjalks;fjals;dgjakl;sdjfakl;sgjakl;sdjfal;fjaklsjgakl;sdjfa;lkgja;lksfdj;lkfja;lgajf;fasdfkjakjfaklgjalsk;fja;ldfjkals;gja;lkdfjkal;gja;lfjd;"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"唯有工作，能使俺快乐。"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"大嘎嘎历史上的咖啡机阿里的风景啊了；即咖喱的咖啡机阿里；框架噶；了的咖啡机阿奎罗；是风景啊了；发动机啊；理发店"}].mutableCopy;
+    _dataSource = @[@{@"type":@"0",@"headerImg":@"",@"name":@"鹏鹏鹏",@"time":@"2017-12-06 14:49",@"mess":@"hello,are you ok?"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"I'm fine ，how about you?"},@{@"type":@"0",@"headerImg":@"",@"name":@"鹏鹏鹏",@"time":@"2017-12-06 14:49",@"mess":@"lajfldjflasd;gjasdl;kfjdakl;sfjalks;fjals;dgjakl;sdjfakl;sgjakl;sdjfal;fjaklsjgakl;sdjfa;lkgja;lksfdj;lkfja;lgajf;fasdfkjakjfaklgjalsk;fja;ldfjkals;gja;lkdfjkal;gja;lfjd;"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"唯有工作，能使俺快乐。"},@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":@"大嘎嘎历史上的咖啡机阿里的风景啊了；即咖喱的咖啡机阿里；框架噶；了的咖啡机阿奎罗；是风景啊了；发动机啊；理发店"}].mutableCopy;
     
     [UIView animateWithDuration:0.25f animations:^{
         

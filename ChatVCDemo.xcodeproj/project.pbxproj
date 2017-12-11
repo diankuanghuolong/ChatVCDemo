@@ -29,6 +29,11 @@
 		B63CFE5B1FDA52910021EEE5 /* ViewController+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CFE4F1FDA52910021EEE5 /* ViewController+MASAdditions.m */; };
 		B63CFE5C1FDA52910021EEE5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B63CFE501FDA52910021EEE5 /* README.md */; };
 		B63CFE601FDA73540021EEE5 /* PleaseREADME.md in Resources */ = {isa = PBXBuildFile; fileRef = B63CFE5F1FDA73540021EEE5 /* PleaseREADME.md */; };
+		B6CC06AF1FDE52DE00F82CB8 /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = B6CC06AA1FDE52DE00F82CB8 /* 1.png */; };
+		B6CC06B01FDE52DE00F82CB8 /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = B6CC06AB1FDE52DE00F82CB8 /* 2.png */; };
+		B6CC06B11FDE52DE00F82CB8 /* 3.png in Resources */ = {isa = PBXBuildFile; fileRef = B6CC06AC1FDE52DE00F82CB8 /* 3.png */; };
+		B6CC06B21FDE52DE00F82CB8 /* 4.png in Resources */ = {isa = PBXBuildFile; fileRef = B6CC06AD1FDE52DE00F82CB8 /* 4.png */; };
+		B6CC06B31FDE52DE00F82CB8 /* 5.png in Resources */ = {isa = PBXBuildFile; fileRef = B6CC06AE1FDE52DE00F82CB8 /* 5.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +82,11 @@
 		B63CFE5D1FDA72510021EEE5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		B63CFE5E1FDA72510021EEE5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		B63CFE5F1FDA73540021EEE5 /* PleaseREADME.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = PleaseREADME.md; sourceTree = "<group>"; };
+		B6CC06AA1FDE52DE00F82CB8 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
+		B6CC06AB1FDE52DE00F82CB8 /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
+		B6CC06AC1FDE52DE00F82CB8 /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
+		B6CC06AD1FDE52DE00F82CB8 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
+		B6CC06AE1FDE52DE00F82CB8 /* 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 5.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +124,7 @@
 				B63CFE101FDA3E7B0021EEE5 /* ViewController.h */,
 				B63CFE111FDA3E7B0021EEE5 /* ViewController.m */,
 				B63CFE2B1FDA51E30021EEE5 /* Chat */,
+				B6CC06A91FDE52DE00F82CB8 /* showImgs */,
 				B63CFE131FDA3E7B0021EEE5 /* Main.storyboard */,
 				B63CFE161FDA3E7B0021EEE5 /* Assets.xcassets */,
 				B63CFE181FDA3E7B0021EEE5 /* LaunchScreen.storyboard */,
@@ -179,6 +190,18 @@
 			path = Masonry;
 			sourceTree = "<group>";
 		};
+		B6CC06A91FDE52DE00F82CB8 /* showImgs */ = {
+			isa = PBXGroup;
+			children = (
+				B6CC06AA1FDE52DE00F82CB8 /* 1.png */,
+				B6CC06AB1FDE52DE00F82CB8 /* 2.png */,
+				B6CC06AC1FDE52DE00F82CB8 /* 3.png */,
+				B6CC06AD1FDE52DE00F82CB8 /* 4.png */,
+				B6CC06AE1FDE52DE00F82CB8 /* 5.png */,
+			);
+			path = showImgs;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -237,11 +260,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6CC06B21FDE52DE00F82CB8 /* 4.png in Resources */,
 				B63CFE5C1FDA52910021EEE5 /* README.md in Resources */,
+				B6CC06AF1FDE52DE00F82CB8 /* 1.png in Resources */,
 				B63CFE311FDA51E30021EEE5 /* chatImg@2x.png in Resources */,
 				B63CFE1A1FDA3E7B0021EEE5 /* LaunchScreen.storyboard in Resources */,
 				B63CFE171FDA3E7B0021EEE5 /* Assets.xcassets in Resources */,
+				B6CC06B11FDE52DE00F82CB8 /* 3.png in Resources */,
 				B63CFE601FDA73540021EEE5 /* PleaseREADME.md in Resources */,
+				B6CC06B01FDE52DE00F82CB8 /* 2.png in Resources */,
+				B6CC06B31FDE52DE00F82CB8 /* 5.png in Resources */,
 				B63CFE151FDA3E7B0021EEE5 /* Main.storyboard in Resources */,
 				B63CFE511FDA52910021EEE5 /* LICENSE in Resources */,
 			);
