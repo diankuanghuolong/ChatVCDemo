@@ -23,6 +23,9 @@
 {
     //键盘高度
     CGFloat _keyboardHigh;
+    
+    BOOL _needScroolBottom;// 判断是否需要滑动到底部
+    CGFloat _oldOffset;//scrollview的上一次的偏移量
 }
 
 /*
@@ -48,6 +51,7 @@
     _keyboardHigh = 0;
     _dataSource = [NSMutableArray new];
     _cellHeight = [NSMutableDictionary new];
+    _needScroolBottom = YES;
     
     //加载footerView
     [self loadFooterView];
@@ -207,7 +211,6 @@
         
         [UIView animateWithDuration:0.25f animations:^{
             
-            
         } completion:^(BOOL finished) {
             
             [self reframeFooterView:60 AndChatView:40];
@@ -247,6 +250,32 @@
     [_cellHeight setObject:@([cell getCellHeight]) forKey:indexPath];
     
     return cell;
+}
+-(void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([indexPath row] == ((NSIndexPath*)[[tableView indexPathsForVisibleRows] lastObject]).row){
+        //end of loading
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if (_needScroolBottom == YES)
+            {
+                [UIView animateWithDuration:0.25f animations:^{
+                    
+                    //滑动到底部
+                    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+                }];
+            }
+        });
+    }
+}
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (_tableView == scrollView && _oldOffset  && _tableView.contentOffset.y < _oldOffset)
+    {
+        _needScroolBottom = NO;
+    }
+    
+    _oldOffset = scrollView.contentOffset.y;//将当前位移变成缓存位移
 }
 #pragma mark  ===== notificaiton method  =====
 -(void)keyboardShow:(NSNotification *)sender
@@ -378,12 +407,14 @@
         make.bottom.equalTo(_footerView.mas_top);
     }];
     
-    [UIView animateWithDuration:0.25f animations:^{
-        
-        //滑动到底部
-        [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-        
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIView animateWithDuration:0.25f animations:^{
+            
+            //滑动到底部
+            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+            
+        }];
+    });
 }
 
 #pragma mark  ===== dealloc  =====
