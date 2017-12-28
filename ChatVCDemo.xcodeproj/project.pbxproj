@@ -29,6 +29,7 @@
 		B63CFE5B1FDA52910021EEE5 /* ViewController+MASAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CFE4F1FDA52910021EEE5 /* ViewController+MASAdditions.m */; };
 		B63CFE5C1FDA52910021EEE5 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B63CFE501FDA52910021EEE5 /* README.md */; };
 		B63CFE601FDA73540021EEE5 /* PleaseREADME.md in Resources */ = {isa = PBXBuildFile; fileRef = B63CFE5F1FDA73540021EEE5 /* PleaseREADME.md */; };
+		B6B1B6AD1FF47CF0008D5F3A /* ToolView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B1B6AC1FF47CF0008D5F3A /* ToolView.m */; };
 		B6CD448F1FF37138003D23BA /* chatDemo.gif in Resources */ = {isa = PBXBuildFile; fileRef = B6CD448E1FF37138003D23BA /* chatDemo.gif */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +79,8 @@
 		B63CFE5D1FDA72510021EEE5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
 		B63CFE5E1FDA72510021EEE5 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		B63CFE5F1FDA73540021EEE5 /* PleaseREADME.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = PleaseREADME.md; sourceTree = "<group>"; };
+		B6B1B6AB1FF47CF0008D5F3A /* ToolView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ToolView.h; sourceTree = "<group>"; };
+		B6B1B6AC1FF47CF0008D5F3A /* ToolView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ToolView.m; sourceTree = "<group>"; };
 		B6CD448E1FF37138003D23BA /* chatDemo.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = chatDemo.gif; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -135,6 +138,8 @@
 				B63CFE2E1FDA51E30021EEE5 /* MessageCell.m */,
 				B63CFE2F1FDA51E30021EEE5 /* MessageVC.h */,
 				B63CFE301FDA51E30021EEE5 /* MessageVC.m */,
+				B6B1B6AB1FF47CF0008D5F3A /* ToolView.h */,
+				B6B1B6AC1FF47CF0008D5F3A /* ToolView.m */,
 				B63CFE341FDA52910021EEE5 /* Masonry */,
 			);
 			path = Chat;
@@ -280,6 +285,7 @@
 				B63CFE5B1FDA52910021EEE5 /* ViewController+MASAdditions.m in Sources */,
 				B63CFE531FDA52910021EEE5 /* MASConstraint.m in Sources */,
 				B63CFE551FDA52910021EEE5 /* MASLayoutConstraint.m in Sources */,
+				B6B1B6AD1FF47CF0008D5F3A /* ToolView.m in Sources */,
 				B63CFE0F1FDA3E7B0021EEE5 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

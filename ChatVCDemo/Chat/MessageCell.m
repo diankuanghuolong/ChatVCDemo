@@ -9,9 +9,24 @@
 #import "MessageCell.h"
 #import "Masonry.h"
 
+//--------------------------- 宏定义参数 、建议项目使用时，放在pch中 ----------------------------------
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
+/*
+ 定义安全区域到顶部／底部高度
+ */
+#define SafeAreaTopHeight (SCREEN_WIDTH == 812.0 ? 88 : 64)
+#define SafeAreaBottomHeight (SCREEN_HEIGHT == 812.0 ? 34 : 0)
+
+//高度系数:(821x 667 8和6)
+#define HeightCoefficient (SCREEN_HEIGHT == 812.0 ? 667.0/667.0 : SCREEN_HEIGHT/667.0)
+
+//宽度系数：(821x 667 8和6)
+#define WidthCoefficient (SCREEN_WIDTH == 375.0 ? 375.0/375.0 : SCREEN_WIDTH/375.0)
+//-----------------------------------------------------------------------------------------------
+
 #define GREEN_COLOR [UIColor colorWithRed:208/255.0 green:241/255.0 blue:186/255.0 alpha:1]
+#define MAX_MessageL SCREEN_WIDTH - (40 + 30 + 20)*WidthCoefficient
 
 @interface MessageCell()
 
@@ -83,49 +98,49 @@
     __weak typeof(self) weakSelf = self;
     [_headerIV mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(weakSelf.contentView.mas_left).offset(15);
-        make.top.equalTo(weakSelf.contentView.mas_top).offset(10);
-        make.width.mas_equalTo(40);
-        make.height.mas_offset(40);
+        make.left.equalTo(weakSelf.contentView.mas_left).offset(15*WidthCoefficient);
+        make.top.equalTo(weakSelf.contentView.mas_top).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(40*HeightCoefficient);
+        make.height.mas_offset(40*HeightCoefficient);
         
     }];
     
     [_nameL mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(_headerIV.mas_right).offset(10);
+        make.left.equalTo(_headerIV.mas_right).offset(10*WidthCoefficient);
         make.top.equalTo(_headerIV.mas_top);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(20);
+        make.width.mas_equalTo(60*WidthCoefficient);
+        make.height.mas_equalTo(20*HeightCoefficient);
     }];
     
     [_timeL mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(_nameL.mas_right).offset(5);
+        make.left.equalTo(_nameL.mas_right).offset(5*WidthCoefficient);
         make.top.equalTo(_nameL.mas_top);
-        make.right.equalTo(weakSelf.contentView.mas_right).offset(-15);
+        make.right.equalTo(weakSelf.contentView.mas_right).offset(-15*WidthCoefficient);
         make.bottom.equalTo(_nameL.mas_bottom);
     }];
     
     [triangleIV mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(_headerIV.mas_right).offset(10);
-        make.top.equalTo(_nameL.mas_bottom).offset(10);
-        make.width.mas_equalTo(10);
-        make.height.mas_equalTo(10);
+        make.left.equalTo(_headerIV.mas_right).offset(10*WidthCoefficient);
+        make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(10*HeightCoefficient);
+        make.height.mas_equalTo(10*HeightCoefficient);
     }];
     
     [_messageView mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(_headerIV.mas_right).offset(20);
-        make.top.equalTo(_nameL.mas_bottom).offset(10);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(40);
+        make.left.equalTo(_headerIV.mas_right).offset(20*WidthCoefficient);
+        make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(60*WidthCoefficient);
+        make.height.mas_equalTo(40*HeightCoefficient);
     }];
     
     [_messageL mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.center.equalTo(_messageView);
-        make.edges.mas_offset(UIEdgeInsetsMake(10, 15, 10, 15));
+        make.edges.mas_offset(UIEdgeInsetsMake(10*HeightCoefficient, 15*WidthCoefficient, 10*HeightCoefficient, 15*WidthCoefficient));
     }];
 }
 -(void)loadSelfCell
@@ -177,48 +192,48 @@
     __weak typeof(self) weakSelf = self;
     [_headerIV mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.left.equalTo(weakSelf.contentView.mas_right).offset(- 55);
-        make.top.equalTo(weakSelf.contentView.mas_top).offset(10);
-        make.width.mas_equalTo(40);
-        make.height.mas_equalTo(40);
+        make.left.equalTo(weakSelf.contentView.mas_right).offset(- 55*WidthCoefficient);
+        make.top.equalTo(weakSelf.contentView.mas_top).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(40*HeightCoefficient);
+        make.height.mas_equalTo(40*HeightCoefficient);
     }];
     
     [_nameL mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.right.equalTo(_nameL.mas_left).offset(-10);
+        make.right.equalTo(_nameL.mas_left).offset(-10*WidthCoefficient);
         make.top.equalTo(_headerIV.mas_top);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(20);
+        make.width.mas_equalTo(60*WidthCoefficient);
+        make.height.mas_equalTo(20*HeightCoefficient);
     }];
     
     [_timeL mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.right.equalTo(_nameL.mas_left).offset(-5);
+        make.right.equalTo(_nameL.mas_left).offset(-5*WidthCoefficient);
         make.top.equalTo(_nameL.mas_top);
-        make.left.equalTo(weakSelf.contentView.mas_left).offset(15);
-        make.height.mas_equalTo(20);
+        make.left.equalTo(weakSelf.contentView.mas_left).offset(15*WidthCoefficient);
+        make.height.mas_equalTo(20*HeightCoefficient);
     }];
     
     [triangleIV mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.right.equalTo(_headerIV.mas_left).offset(-10);
-        make.top.equalTo(_nameL.mas_bottom).offset(10);
-        make.width.mas_equalTo(10);
-        make.height.mas_equalTo(10);
+        make.right.equalTo(_headerIV.mas_left).offset(-10*WidthCoefficient);
+        make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(10*HeightCoefficient);
+        make.height.mas_equalTo(10*HeightCoefficient);
     }];
     
     [_messageView mas_makeConstraints:^(MASConstraintMaker *make) {
        
-        make.right.equalTo(_headerIV.mas_left).offset(-20);
-        make.top.equalTo(_nameL.mas_bottom).offset(10);
-        make.width.mas_equalTo(60);
-        make.height.mas_equalTo(40);
+        make.right.equalTo(_headerIV.mas_left).offset(-20*WidthCoefficient);
+        make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
+        make.width.mas_equalTo(60*WidthCoefficient);
+        make.height.mas_equalTo(40*HeightCoefficient);
     }];
     
     [_messageL mas_makeConstraints:^(MASConstraintMaker *make) {
        
         make.center.equalTo(_messageView);
-        make.edges.mas_offset(UIEdgeInsetsMake(10, 15, 10, 15));
+        make.edges.mas_offset(UIEdgeInsetsMake(10*HeightCoefficient, 15*WidthCoefficient, 10*HeightCoefficient, 15*WidthCoefficient));
     }];
 }
 
@@ -246,39 +261,42 @@
     if (self.type == 0)//对方
     {
         //nameL 宽修改
-        CGFloat nameLW = [self sizeForLableWithText:_nameL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, _nameL.frame.size.height)].width + 6;
-        nameLW = nameLW < 40 ? 40 : nameLW;
+//        CGFloat nameLW = [self sizeForLableWithText:_nameL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, _nameL.frame.size.height)].width + 6;
+        CGFloat nameLW = [self sizeWithText:_nameL.text fontSize:12].width + 6*WidthCoefficient;
+        nameLW = nameLW < 40*WidthCoefficient ? 40*WidthCoefficient : nameLW;
         
         __weak typeof(self) weakSelf = self;
         [_nameL mas_updateConstraints:^(MASConstraintMaker *make) {
 
-            make.left.equalTo(_headerIV.mas_right).offset(10);
+            make.left.equalTo(_headerIV.mas_right).offset(10*WidthCoefficient);
             make.top.equalTo(_headerIV.mas_top);
             make.width.mas_equalTo(nameLW);
-            make.height.mas_equalTo(20);
+            make.height.mas_equalTo(20*HeightCoefficient);
         }];
         
         //timeL refame
         [_timeL mas_updateConstraints:^(MASConstraintMaker *make) {
 
-            make.left.equalTo(_nameL.mas_right).offset(5);
+            make.left.equalTo(_nameL.mas_right).offset(5*WidthCoefficient);
             make.top.equalTo(_nameL.mas_top);
-            make.right.equalTo(weakSelf.contentView.mas_right).offset(-15);
+            make.right.equalTo(weakSelf.contentView.mas_right).offset(-15*WidthCoefficient);
             make.bottom.equalTo(_nameL.mas_bottom);
         }];
         
         //messageView messageL reframe
         [self layoutIfNeeded];
-        CGFloat messageW = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, 40)].width + 6 + 30;
-        messageW = messageW > SCREEN_WIDTH - _headerIV.frame.size.width - 30 - 20 ? SCREEN_WIDTH - _headerIV.frame.size.width - 30 - 20 : messageW;
+//        CGFloat messageW = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, 40)].width + 6 + 30;
+        CGFloat messageW = [self sizeWithText:_messageL.text fontSize:12].width + 36 *WidthCoefficient;
+        messageW = messageW > MAX_MessageL  ?MAX_MessageL : messageW;
         
-        CGFloat messageH = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(messageW, MAXFLOAT)].height + 20 + 20;
-        messageH = messageH < 40 ? 40 : messageH;
+//        CGFloat messageH = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(messageW, MAXFLOAT)].height + 20 + 20;
+        CGFloat messageH = [self sizeWithText:_messageL.text fontSize:12].height + 40*HeightCoefficient;
+        messageH = messageH < 40*HeightCoefficient ? 40*HeightCoefficient : messageH;
         
         [_messageView mas_updateConstraints:^(MASConstraintMaker *make) {
 
-            make.left.equalTo(_headerIV.mas_right).offset(20);
-            make.top.equalTo(_nameL.mas_bottom).offset(10);
+            make.left.equalTo(_headerIV.mas_right).offset(20*WidthCoefficient);
+            make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
             make.width.mas_equalTo(messageW);
             make.height.mas_equalTo(messageH);
         }];
@@ -286,7 +304,7 @@
         [_messageL mas_updateConstraints:^(MASConstraintMaker *make) {
 
             make.center.equalTo(_messageView);
-            make.edges.mas_offset(UIEdgeInsetsMake(10, 15, 10, 15));
+            make.edges.mas_offset(UIEdgeInsetsMake(10*HeightCoefficient, 15*WidthCoefficient, 10*HeightCoefficient, 15*WidthCoefficient));
         }];
         
         //马上刷新
@@ -297,15 +315,16 @@
     else//自己
     {
         //nameL 宽修改
-        CGFloat nameLW = [self sizeForLableWithText:_nameL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, _nameL.frame.size.height)].width + 6;
-        nameLW = nameLW < 40 ? 40 : nameLW;
+//        CGFloat nameLW = [self sizeForLableWithText:_nameL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, _nameL.frame.size.height)].width + 6;
+        CGFloat nameLW = [self sizeWithText:_nameL.text fontSize:12].width + 6*WidthCoefficient;
+        nameLW = nameLW < 40*HeightCoefficient ? 40*HeightCoefficient : nameLW;
         
         [_nameL mas_updateConstraints:^(MASConstraintMaker *make) {
 
-            make.right.equalTo(_headerIV.mas_left).offset(- 10);
+            make.right.equalTo(_headerIV.mas_left).offset(- 10*WidthCoefficient);
             make.top.equalTo(_headerIV.mas_top);
             make.width.mas_equalTo(nameLW);
-            make.height.mas_equalTo(20);
+            make.height.mas_equalTo(20*HeightCoefficient);
         }];
         
         __weak typeof(self) weakSelf = self;
@@ -313,24 +332,26 @@
         [_timeL mas_updateConstraints:^(MASConstraintMaker *make) {
 
             make.top.equalTo(_nameL.mas_top);
-            make.left.equalTo(weakSelf.contentView.mas_left).offset(15);
-            make.right.equalTo(_nameL.mas_left).offset(-5);
-            make.height.mas_equalTo(20);
+            make.left.equalTo(weakSelf.contentView.mas_left).offset(15*WidthCoefficient);
+            make.right.equalTo(_nameL.mas_left).offset(-5*WidthCoefficient);
+            make.height.mas_equalTo(20*HeightCoefficient);
         }];
         
         //messageView messageL reframe
         [self layoutIfNeeded];
-        CGFloat messageW = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, 40)].width + 6 + 30;
+//        CGFloat messageW = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(MAXFLOAT, 40)].width + 6 + 30;
+        CGFloat messageW = [self sizeWithText:_messageL.text fontSize:12].width + 36 *HeightCoefficient;
         
-        messageW = messageW > SCREEN_WIDTH - _headerIV.frame.size.width - 30 - 20 ? SCREEN_WIDTH - _headerIV.frame.size.width - 30 - 20 : messageW;
+        messageW = messageW > MAX_MessageL ? MAX_MessageL : messageW;
         
-        CGFloat messageH = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(messageW, MAXFLOAT)].height + 20 + 20;
-        messageH = messageH < 40 ? 40 : messageH;
+//        CGFloat messageH = [self sizeForLableWithText:_messageL.text fontSize:12 withSize:CGSizeMake(messageW, MAXFLOAT)].height + 20 + 20;
+        CGFloat messageH = [self sizeWithText:_messageL.text fontSize:12].height + 40 *HeightCoefficient;
+        messageH = messageH < 40*HeightCoefficient ? 40*HeightCoefficient : messageH;
         
         [_messageView mas_updateConstraints:^(MASConstraintMaker *make) {
 
-            make.right.equalTo(_headerIV.mas_left).offset(-20);
-            make.top.equalTo(_nameL.mas_bottom).offset(10);
+            make.right.equalTo(_headerIV.mas_left).offset(-20*WidthCoefficient);
+            make.top.equalTo(_nameL.mas_bottom).offset(10*HeightCoefficient);
             make.width.mas_equalTo(messageW);
             make.height.mas_equalTo(messageH);
         }];
@@ -338,7 +359,7 @@
         [_messageL mas_updateConstraints:^(MASConstraintMaker *make) {
 
             make.center.equalTo(_messageView);
-            make.edges.mas_offset(UIEdgeInsetsMake(10, 15, 10, 15));
+            make.edges.mas_offset(UIEdgeInsetsMake(10*HeightCoefficient, 15*WidthCoefficient, 10*HeightCoefficient, 15*WidthCoefficient));
         }];
         
         //马上更新
@@ -348,29 +369,26 @@
 }
 -(CGFloat)getCellHeight
 {
-    CGFloat h = CGRectGetMaxY(_messageView.frame) + 10;
+    CGFloat h = CGRectGetMaxY(_messageView.frame) + 10*HeightCoefficient;
     return h;
 }
 
 #pragma mark  ===== tools =====
--(CGSize) sizeForLableWithText:(NSString *)strText fontSize:(NSInteger)fontSize withSize:(CGSize)size
+- (CGSize)sizeWithText:(NSString *)strText fontSize:(NSInteger)fontSize
 {
-    CGSize textSize;
-    if (!strText) strText = @"";
-    NSString *s = strText;
-    NSAttributedString *attrStr = [[NSAttributedString  alloc] initWithString:s];
-    NSRange range = NSMakeRange(0, attrStr.length);
-    NSMutableDictionary *dic = [attrStr attributesAtIndex:0 effectiveRange:&range].mutableCopy;
-//    NSDictionary *dic1 =@{NSFontAttributeName:[UIFont fontWithName:@"Arial" size:fontSize]};// 获取该段attributedString的属性字典1
-    NSDictionary *dic1 = @{NSFontAttributeName:[UIFont systemFontOfSize:fontSize]};
-    [dic addEntriesFromDictionary:dic1];
-
-
-    // 计算文本的大小
-    textSize = [s boundingRectWithSize:size options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading // 文本绘制时的附加选项
-                            attributes:dic        // 文字的属性
-                               context:nil].size;
-    return textSize;
+    CGSize textMinSize = {MAX_MessageL, CGFLOAT_MAX};
+    CGSize retSize;
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setLineSpacing:0];//调整行间距
+    
+    retSize = [strText boundingRectWithSize:textMinSize options:NSStringDrawingUsesLineFragmentOrigin
+                                         attributes:@{
+                                                      NSFontAttributeName:[UIFont systemFontOfSize:fontSize],
+                                                      NSParagraphStyleAttributeName:paragraphStyle
+                                                      }
+                                            context:nil].size;
+    return CGSizeMake(ceilf(retSize.width), ceilf(retSize.height));
 }
 
 //----- 粘贴板事件

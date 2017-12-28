@@ -9,17 +9,25 @@
 #import "MessageVC.h"
 #import "MessageCell.h"
 #import "Masonry.h"
+#import "ToolView.h"
 
+//--------------------------- 宏定义参数 、建议项目使用时，放在pch中 ----------------------------------
+#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
+#define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 /*
  定义安全区域到顶部／底部高度
  */
-#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
-#define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
-
 #define SafeAreaTopHeight (SCREEN_WIDTH == 812.0 ? 88 : 64)
 #define SafeAreaBottomHeight (SCREEN_HEIGHT == 812.0 ? 34 : 0)
 
-@interface MessageVC ()<UITableViewDelegate,UITableViewDataSource,UITextViewDelegate>
+//高度系数:(821x 667 8和6)
+#define HeightCoefficient (SCREEN_HEIGHT == 812.0 ? 667.0/667.0 : SCREEN_HEIGHT/667.0)
+
+//宽度系数：(821x 667 8和6)
+#define WidthCoefficient (SCREEN_WIDTH == 375.0 ? 375.0/375.0 : SCREEN_WIDTH/375.0)
+//-----------------------------------------------------------------------------------------------
+
+@interface MessageVC ()<UITableViewDelegate,UITableViewDataSource>
 {
     //键盘高度
     CGFloat _keyboardHigh;
@@ -33,7 +41,7 @@
  */
 @property(nonatomic,strong)UITableView *tableView;
 @property(nonatomic,strong)UIView *footerView;
-@property(nonatomic,strong)UITextView *chatTV;
+@property (nonatomic ,strong)ToolView *toolView;
 
 @property(nonatomic,strong)NSMutableArray *dataSource;//请求数据
 @property(nonatomic,strong)NSMutableDictionary *cellHeight;//cell 高
@@ -58,7 +66,7 @@
     
     //加载tableView
     [self loadTableView];
-    
+    [_tableView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     //键盘弹跳通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
@@ -75,67 +83,40 @@
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self resignAllFirstResponder];
 }
 #pragma mark  ===== loadSubViews =====
+-(ToolView *)toolView
+{
+    if (!_toolView)
+    {
+        _toolView = [[ToolView alloc] init];
+        __weak typeof(self) weakSelf = self;
+        _toolView.sendMessage = ^(UITextView *chatTV) {
+            
+            [weakSelf sendMessageAction:chatTV];
+        };
+    }
+    return _toolView;
+}
 -(void)loadFooterView
 {
     if (!_footerView)
     {
-        CGFloat footerViewHeight = 60;
+        CGFloat footerViewHeight = 60*HeightCoefficient;
         _footerView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HEIGHT - footerViewHeight - SafeAreaBottomHeight, SCREEN_WIDTH, footerViewHeight)];
         _footerView.backgroundColor = [UIColor grayColor];
         [self.view addSubview:_footerView];
         
         /*
-         输入框tf
-         发送按钮 sentBtn
+         toolView
          */
-        
-        //tf
-        CGFloat tvWith = _footerView.frame.size.width - 30 - 60 - 10, tvHeight = 40;
-        UIColor *tvColor = [UIColor colorWithRed:57/255.0 green:54/255.0 blue:43/255.0 alpha:1];
-        UITextView *tv = [[UITextView alloc] initWithFrame:CGRectZero];
-        tv.delegate = self;
-        tv.scrollEnabled = YES;
-        tv.layer.cornerRadius = 10;
-        tv.layer.masksToBounds = YES;
-        tv.keyboardType = UIKeyboardTypeDefault;
-        tv.returnKeyType = UIReturnKeyDone;
-        tv.backgroundColor = [UIColor whiteColor];
-        tv.font = [UIFont systemFontOfSize:14];
-        tv.textColor = tvColor;
-        [_footerView addSubview:tv];
-        
-        [tv mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_footerView addSubview:self.toolView];
+        [_toolView mas_makeConstraints:^(MASConstraintMaker *make) {
             
-            make.left.equalTo(_footerView).offset(15);
-            make.top.equalTo(_footerView).offset(10);
-            make.width.mas_equalTo(tvWith);
-            make.height.mas_equalTo(tvHeight);
+            make.center.equalTo(_toolView);
+            make.edges.mas_offset(UIEdgeInsetsMake(0, 0, 0, 0));
         }];
-        
-        _chatTV = tv;
-        
-        //sentBtn
-        CGFloat sentBtnWith = 60, sentBtnHeight = 40;
-        UIColor *sentBtnColor = [UIColor colorWithRed:125/255.0 green:207/255.0 blue:247/255.0 alpha:1];
-        UIButton * sentBtn = [[UIButton alloc] initWithFrame:CGRectZero];
-        sentBtn.backgroundColor = sentBtnColor;
-        [sentBtn setTitle:@"发送" forState:UIControlStateNormal];
-        [sentBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        sentBtn.layer.cornerRadius = 10;
-        sentBtn.layer.masksToBounds = YES;
-        [sentBtn addTarget:self action:@selector(sendMessageAction:) forControlEvents:UIControlEventTouchUpInside];
-        [_footerView addSubview:sentBtn];
-        
-        [sentBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            
-            make.right.equalTo(_footerView).offset(- 15);
-            make.top.equalTo(_footerView).offset(10);
-            make.width.mas_equalTo(sentBtnWith);
-            make.height.mas_equalTo(sentBtnHeight);
-        }];
+        [_toolView addObserver:self forKeyPath:@"chatTVHeight" options:NSKeyValueObservingOptionNew context:nil];
     }
 }
 -(void)loadTableView
@@ -153,7 +134,7 @@
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.tableHeaderView = [UIView new];
-        _tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 20)];
+        _tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 10*HeightCoefficient)];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.backgroundColor = [UIColor colorWithRed:245/255.0 green:244/255.0 blue:239/255.0 alpha:1];
         [self.view addSubview:self.tableView];
@@ -162,7 +143,7 @@
         [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
             
             make.left.equalTo(weakSelf.view.mas_left);
-            make.top.equalTo(weakSelf.view.mas_top).offset(10);
+            make.top.equalTo(weakSelf.view.mas_top).offset(10*HeightCoefficient);
             make.width.mas_equalTo(weakSelf.view.mas_width);
             make.bottom.equalTo(_footerView.mas_top);
         }];
@@ -190,34 +171,31 @@
     }];
 }
 #pragma mark  ===== action  =====
--(void)resignAllFirstResponder//注销第一响应者
-{
-    if(self.chatTV.isFirstResponder) [self.chatTV resignFirstResponder];
-}
 -(void)hiddenKeyBoard:(id)sender
 {
-    [self resignAllFirstResponder];
+    [_toolView.chatTV resignFirstResponder];
 }
--(void)sendMessageAction:(id)sender
+-(void)sendMessageAction:(UITextView *)chatTV
 {
     //发送消息，调用发送消息接口；请求成功后，调用download方法重新加载数据并刷新tableview
     
     //此处对假数据进行处理 修改数据源并刷新tableview；
-    if (_chatTV.text.length > 0)
+    if (chatTV.text.length > 0)
     {
-        [self.dataSource addObject:@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":_chatTV.text}];
+        [self.dataSource addObject:@{@"type":@"1",@"headerImg":@"",@"name":@"海",@"time":@"2017-12-06 14:49",@"mess":chatTV.text}];
+        
+        [_footerView mas_updateConstraints:^(MASConstraintMaker *make) {
+            
+            make.height.mas_equalTo(60*HeightCoefficient);
+        }];
         
         [_tableView reloadData];
-        
-        [UIView animateWithDuration:0.25f animations:^{
-            
-        } completion:^(BOOL finished) {
-            
-            [self reframeFooterView:60 AndChatView:40];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
             //滑动到底部
-            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-            _chatTV.text = nil;
-        }];
+            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+            chatTV.text = nil;
+        });
     }
 }
 
@@ -229,7 +207,7 @@
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [_cellHeight[indexPath] floatValue] < 100 ? 100 : [_cellHeight[indexPath] floatValue];
+    return [_cellHeight[indexPath] floatValue] < 100*HeightCoefficient ? 100*HeightCoefficient : [_cellHeight[indexPath] floatValue];
 }
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -262,7 +240,13 @@
                 [UIView animateWithDuration:0.25f animations:^{
                     
                     //滑动到底部
-                    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+                    if (_tableView.contentSize.height > _tableView.frame.size.height)
+                    {
+                        CGPoint offset = CGPointMake(0, _tableView.contentSize.height - _tableView.frame.size.height);
+                        NSLog(@"contentSize.height == %f,tableView.frame.size.height == %f",_tableView.contentSize.height,_tableView.frame.size.height);
+                        [_tableView setContentOffset:offset animated:YES];
+                    }
+//                    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
                 }];
             }
         });
@@ -330,7 +314,7 @@
         [_tableView mas_updateConstraints:^(MASConstraintMaker *make) {
             
             make.left.equalTo(weakSelf.view.mas_left);
-            make.top.equalTo(weakSelf.view.mas_top).offset(10);
+            make.top.equalTo(weakSelf.view.mas_top).offset(10*HeightCoefficient);
             make.width.mas_equalTo(weakSelf.view.mas_width);
             make.bottom.equalTo(_footerView.mas_top);
         }];
@@ -345,82 +329,47 @@
         [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }];
 }
-#pragma  mark --tv delegate method
-- (void)textViewDidBeginEditing:(UITextView *)textView
+#pragma mark  ===== kvo  =====
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-    [textView becomeFirstResponder];
-}
--(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if ([text isEqualToString:@"\n"] && textView.returnKeyType != UIReturnKeyDefault)
+    if ([keyPath isEqualToString:@"contentSize"])
     {
-        NSLog(@"回车");
-        //发送消息
-        [self sendMessageAction:nil];
-        return NO;
+        CGSize contentSize = (CGSize)[[change valueForKey:NSKeyValueChangeNewKey] CGSizeValue];
+        if (contentSize.height > self.tableView.frame.size.height)
+        {
+            CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
+            [self.tableView setContentOffset:offset animated:YES];
+        }
     }
-    
-    if (textView == _chatTV)
+    else
     {
-        NSString * str = [textView.text stringByReplacingCharactersInRange:range withString:text];
+        CGFloat chatHeight = (CGFloat)[[change valueForKey:NSKeyValueChangeNewKey] floatValue];
         
-        NSAttributedString *attrStr = [[NSAttributedString  alloc] initWithString:str];
-        NSRange range = NSMakeRange(0, attrStr.length);
-        NSMutableDictionary *dic = [attrStr attributesAtIndex:0 effectiveRange:&range].mutableCopy;
-        NSDictionary *dic1 = @{NSFontAttributeName:[UIFont systemFontOfSize:14]};
-        [dic addEntriesFromDictionary:dic1];
-        CGFloat h = [str boundingRectWithSize:CGSizeMake(_chatTV.frame.size.width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:dic context:nil].size.height + 20;
-        h = h > 20 * 5 ? 20 * 5 : h;
-        h = h < 40 ? 40 : h;
-        //reframe
-        [self reframeFooterView:(h + 20) AndChatView:h];
-    }
-    
-    return YES;
-}
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    [self resignAllFirstResponder];
-    
-    [self reframeFooterView:60 AndChatView:40];
-}
-#pragma  mark  ===== tools =====
--(void)reframeFooterView:(CGFloat)footerH AndChatView:(CGFloat)chatH
-{
-    
-    [_footerView mas_updateConstraints:^(MASConstraintMaker *make) {
-        
-        make.height.mas_equalTo(footerH);
-    }];
-    
-    [_chatTV mas_updateConstraints:^(MASConstraintMaker *make) {
-        
-        make.height.mas_equalTo(chatH);
-    }];
-    
-    __weak typeof(self) weakSelf = self;
-    [_tableView mas_updateConstraints:^(MASConstraintMaker *make) {
-        
-        make.left.equalTo(weakSelf.view.mas_left);
-        make.top.equalTo(weakSelf.view.mas_top).offset(10);
-        make.width.mas_equalTo(weakSelf.view.mas_width);
-        make.bottom.equalTo(_footerView.mas_top);
-    }];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIView animateWithDuration:0.25f animations:^{
+        //reframe toolView and FooterView
+        [_footerView mas_updateConstraints:^(MASConstraintMaker *make) {
             
-            //滑动到底部
-            [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-            
+            make.height.mas_equalTo(chatHeight + 14*HeightCoefficient);
         }];
-    });
+        
+        __weak typeof(self) weakSelf = self;
+        [_tableView mas_updateConstraints:^(MASConstraintMaker *make) {
+            
+            make.left.equalTo(weakSelf.view.mas_left);
+            make.top.equalTo(weakSelf.view.mas_top).offset(10*HeightCoefficient);
+            make.width.mas_equalTo(weakSelf.view.mas_width);
+            make.bottom.equalTo(_footerView.mas_top);
+        }];
+        
+//        //滑动到底部
+//        [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+    }
+   
 }
-
 #pragma mark  ===== dealloc  =====
 - (void)dealloc
 {
-    [self resignAllFirstResponder];
+    [_toolView removeObserver:self forKeyPath:@"chatTVHeight"];
+    [_tableView removeObserver:self forKeyPath:@"contentSize"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end
