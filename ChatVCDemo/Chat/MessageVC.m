@@ -190,7 +190,8 @@
         }];
         
         [_tableView reloadData];
-
+        _needScroolBottom = YES;//必须加在reloadData之后
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             //滑动到底部
             [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:YES];
@@ -240,13 +241,12 @@
                 [UIView animateWithDuration:0.25f animations:^{
                     
                     //滑动到底部
-                    if (_tableView.contentSize.height > _tableView.frame.size.height)
-                    {
-                        CGPoint offset = CGPointMake(0, _tableView.contentSize.height - _tableView.frame.size.height);
-                        NSLog(@"contentSize.height == %f,tableView.frame.size.height == %f",_tableView.contentSize.height,_tableView.frame.size.height);
-                        [_tableView setContentOffset:offset animated:YES];
-                    }
-//                    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+//                    if (_tableView.contentSize.height > _tableView.frame.size.height)
+//                    {
+//                        CGPoint offset = CGPointMake(0, _tableView.contentSize.height - _tableView.frame.size.height);
+//                        [_tableView setContentOffset:offset animated:YES];
+//                    }
+                    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
                 }];
             }
         });
@@ -287,7 +287,6 @@
             make.bottom.equalTo(_footerView.mas_top);
         }];
     }];
-    
 }
 -(void)keyboardDidShow:(NSNotificationCenter *)sender
 {
@@ -296,6 +295,7 @@
         //滑动到底部
         [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }];
+    _needScroolBottom = YES;
 }
 -(void)keyboardHide:(NSNotification *)sender
 {
@@ -328,18 +328,20 @@
         //滑动到底部
         [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSource.count-1 inSection:0]  atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }];
+    _needScroolBottom = YES;
 }
 #pragma mark  ===== kvo  =====
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"contentSize"])
     {
-        CGSize contentSize = (CGSize)[[change valueForKey:NSKeyValueChangeNewKey] CGSizeValue];
-        if (contentSize.height > self.tableView.frame.size.height)
-        {
-            CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
-            [self.tableView setContentOffset:offset animated:YES];
-        }
+//        CGSize contentSize = (CGSize)[[change valueForKey:NSKeyValueChangeNewKey] CGSizeValue];
+//        if (contentSize.height > self.tableView.frame.size.height)
+//        {
+//            CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
+//            [self.tableView setContentOffset:offset animated:YES];
+//            NSLog(@"～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～～contentSize:%@,tableView.height:%f,offset:%@",NSStringFromCGSize(contentSize),self.tableView.frame.size.height,NSStringFromCGPoint(offset));
+//        }
     }
     else
     {

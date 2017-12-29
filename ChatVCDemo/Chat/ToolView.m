@@ -140,7 +140,6 @@
         h = h > 20 * 5*HeightCoefficient ? 20 * 5*HeightCoefficient : h;//最大高度
         h = h < tvHeight*HeightCoefficient ? tvHeight*HeightCoefficient : h;//最小高度
         //reframe
-        NSLog(@"chatHeight == %f",h);
         [_chatTV mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(h);
         }];
