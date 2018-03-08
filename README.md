@@ -1,4 +1,8 @@
 # ChatVCDemo
+
+[![Github All Releases](https://img.shields.io/github/downloads/diankuanghuolong/ChatVCDemo/total.svg)](https://github.com/diankuanghuolong/ChatVCDemo)
+[![Github Releases](https://img.shields.io/github/downloads/diankuanghuolong/ChatVCDemo/latest/total.svg)](https://github.com/diankuanghuolong/ChatVCDemo)
+
 聊天消息页面简单实现
 
 项目中适配使用的是Masonry，用其他方法适配的可以自己修改。
